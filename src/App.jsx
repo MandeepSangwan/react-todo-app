@@ -1,35 +1,85 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import UserCard from "./components/UserCard";
+import TaskItem from "./components/TaskItem";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [tasks, setTasks] = useState([]);
+  const [input, setInput] = useState("");
+  function handleAddTask() {
+    if (input.trim() === "") return;
+
+    const newTask = {
+      id: Date.now(),
+      text: input,
+      completed: false
+    };
+
+    setTasks([...tasks, newTask]);
+    setInput(""); // clear input
+  }
+
+  // 3️⃣ Delete Task Function
+  function handleDelete(id) {
+    const updatedTasks = tasks.filter(task => task.id !== id);
+    setTasks(updatedTasks);
+  }
+
+  // 4️⃣ Toggle Task Completed
+  function handleToggle(id) {
+    const updatedTasks = tasks.map(task =>
+      task.id === id ? { ...task, completed: !task.completed } : task
+    );
+    setTasks(updatedTasks);
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+    <div style={{ padding: "20px" }}>
+      {/* UserCard */}
+      <UserCard
+        name="Mandeep"
+        role="Frontend Developer"
+        image="https://i.pravatar.cc/150?img=1"
+      />
+
+      {/* Input Section */}
+      <div style={{ margin: "20px 0" }}>
+        <input
+          type="text"
+          value={input}
+          onChange={e => setInput(e.target.value)}
+          placeholder="Enter new task"
+          style={{ padding: "8px", width: "200px" }}
+        />
+        <button
+          onClick={handleAddTask}
+          style={{
+            padding: "8px 12px",
+            marginLeft: "10px",
+            borderRadius: "5px",
+            backgroundColor: "#4CAF50",
+            color: "white",
+            border: "none",
+            cursor: "pointer"
+          }}
+        >
+          Add Task
         </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+
+      {/* Tasks List */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+        {tasks.map(task => (
+          <TaskItem
+            key={task.id}
+            task={task.text}
+            completed={task.completed}
+            onDelete={() => handleDelete(task.id)}
+            onToggle={() => handleToggle(task.id)}
+          />
+        ))}
+      </div>
+    </div>
+  );
 }
 
-export default App
+export default App;
